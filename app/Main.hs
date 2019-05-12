@@ -1,8 +1,10 @@
 module Main where
 
-import Pin(getRemainsPins)
+import Pin(isSplit)
+import System.Environment(getArgs)
+import Text.Regex.Posix
 
 main :: IO ()
 main = do
-  let pins = getRemainsPins [1, 2, 3, 5] [False, False, False, False, False, False, False, False, False, False]
-  print pins
+  args <- getArgs
+  print $ isSplit args

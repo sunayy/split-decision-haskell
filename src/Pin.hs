@@ -1,15 +1,16 @@
 module Pin where
 
+import Text.Regex.Posix
+
 data Pin = FIRST | SECOND | THIRD | FOURTH | FIFTH | SIXTH | SEVENTH | EIGHTH | NINTH | TENTH
   deriving (Show, Enum)
 
-class EnumDataPointer a where
-  getData :: Int -> a
-  getColNum :: a -> Int
 
-instance EnumDataPointer Pin where
-  getData n = ( toEnum n :: Pin )
-  getColNum pin =
+getData :: Int -> Pin
+getData n = ( toEnum (n - 1) :: Pin )
+
+getColNum :: Pin -> Int
+getColNum pin =
     case pin of
       SEVENTH -> 0
       FOURTH  -> 1
@@ -22,12 +23,22 @@ instance EnumDataPointer Pin where
       SIXTH   -> 5
       _       -> 6
 
-getRemainsPins :: [Int] -> [Bool] -> [Bool]
-getRemainsPins [x] remainsTable =
-  setUpPin x remainsTable
-getRemainsPins (x:remains) remainsTable =
-  getRemainsPins remains (setUpPin x remainsTable)
+getColNumById :: Int -> Int
+getColNumById id = getColNum $ getData id
+
+convertToColTable :: [Int] -> [Bool]
+convertToColTable args = (flip getRemainedPins) (replicate 7 False) $ map getColNumById args
+
+getRemainedPins :: [Int] -> [Bool] -> [Bool]
+getRemainedPins [x] remainsTable = setUpPin x remainsTable
+getRemainedPins (x:remains) remainsTable = getRemainedPins remains (setUpPin x remainsTable)
 
 setUpPin :: Int -> [Bool] -> [Bool]
-setUpPin x remainsTable =
-  (take (x - 1) $ remainsTable) ++ [True] ++ (drop x remainsTable)
+setUpPin x remainsTable = (take x $ remainsTable) ++ [True] ++ (drop (x + 1) remainsTable)
+
+mapToStringFromRemainedPins :: [Bool] -> String
+mapToStringFromRemainedPins remained = map (\b -> if b then '1' else '0') remained
+
+isSplit :: [String] -> Bool
+isSplit args =
+ (mapToStringFromRemainedPins $ convertToColTable $ map (\s -> read s :: Int) args) =~ ".*10+1.*"
