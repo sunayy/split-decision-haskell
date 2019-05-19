@@ -5,7 +5,6 @@ import Text.Regex.Posix
 data Pin = FIRST | SECOND | THIRD | FOURTH | FIFTH | SIXTH | SEVENTH | EIGHTH | NINTH | TENTH
   deriving (Show, Enum)
 
-
 getData :: Int -> Pin
 getData n = ( toEnum (n - 1) :: Pin )
 
@@ -24,7 +23,7 @@ getColNum pin =
       _       -> 6
 
 getColNumById :: Int -> Int
-getColNumById id = getColNum $ getData id
+getColNumById = getColNum . getData
 
 convertToColTable :: [Int] -> [Bool]
 convertToColTable args = (flip getRemainedPins) (replicate 7 False) $ map getColNumById args
@@ -37,7 +36,7 @@ setUpPin :: Int -> [Bool] -> [Bool]
 setUpPin x remainsTable = (take x $ remainsTable) ++ [True] ++ (drop (x + 1) remainsTable)
 
 mapToStringFromRemainedPins :: [Bool] -> String
-mapToStringFromRemainedPins remained = map (\b -> if b then '1' else '0') remained
+mapToStringFromRemainedPins = map (\b -> if b then '1' else '0')
 
 isSplit :: [String] -> Bool
 isSplit args =
