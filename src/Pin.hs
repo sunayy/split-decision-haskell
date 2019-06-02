@@ -1,4 +1,6 @@
-module Pin where
+module Pin (
+  isSplit
+) where
 
 import Text.Regex.Posix
 
@@ -38,6 +40,14 @@ setUpPin x remainsTable = (take x $ remainsTable) ++ [True] ++ (drop (x + 1) rem
 mapToStringFromRemainedPins :: [Bool] -> String
 mapToStringFromRemainedPins = map (\b -> if b then '1' else '0')
 
+mapToInt :: [String] -> [Int]
+mapToInt = map (\s -> read s :: Int)
+
+argsToColTable :: [String] -> [Bool]
+argsToColTable = convertToColTable . mapToInt
+
+argsToRemainedString :: [String] -> String
+argsToRemainedString = mapToStringFromRemainedPins . argsToColTable
+
 isSplit :: [String] -> Bool
-isSplit args =
- (mapToStringFromRemainedPins $ convertToColTable $ map (\s -> read s :: Int) args) =~ ".*10+1.*"
+isSplit args = (argsToRemainedString args) =~ ".*10+1.*"
